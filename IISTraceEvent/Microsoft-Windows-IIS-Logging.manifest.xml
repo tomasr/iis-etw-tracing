@@ -1,0 +1,51 @@
+<instrumentationManifest xmlns="http://schemas.microsoft.com/win/2004/08/events">
+ <instrumentation xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:win="http://manifests.microsoft.com/win/2004/08/windows/events">
+  <events>
+   <provider name="Microsoft-Windows-IIS-Logging" guid="{7e8ad27f-b271-4ea2-a783-a47bde29143b}" resourceFileName="Microsoft-Windows-IIS-Logging" messageFileName="Microsoft-Windows-IIS-Logging" symbol="MicrosoftWindowsIISLogging" source="Xml" >
+    <keywords>
+    </keywords>
+    <tasks>
+     <task name="task_0" message="$(string.task_task_0)" value="0"/>
+    </tasks>
+    <events>
+     <event value="6200" symbol="task_0" version="0" task="task_0" level="win:Informational" template="task_0Args"/>
+    </events>
+    <templates>
+     <template tid="task_0Args">
+      <data name="EnabledFieldsFlags" inType="win:UInt32"/>
+      <data name="date" inType="win:UnicodeString"/>
+      <data name="time" inType="win:UnicodeString"/>
+      <data name="cip" inType="win:UnicodeString"/>
+      <data name="csusername" inType="win:UnicodeString"/>
+      <data name="ssitename" inType="win:UnicodeString"/>
+      <data name="scomputername" inType="win:UnicodeString"/>
+      <data name="sip" inType="win:UnicodeString"/>
+      <data name="csmethod" inType="win:AnsiString"/>
+      <data name="csuristem" inType="win:UnicodeString"/>
+      <data name="csuriquery" inType="win:AnsiString"/>
+      <data name="scstatus" inType="win:UInt16"/>
+      <data name="scwin32status" inType="win:UInt32"/>
+      <data name="scbytes" inType="win:UInt64"/>
+      <data name="csbytes" inType="win:UInt64"/>
+      <data name="timetaken" inType="win:UInt64"/>
+      <data name="sport" inType="win:UInt16"/>
+      <data name="csUserAgent" inType="win:AnsiString"/>
+      <data name="csCookie" inType="win:AnsiString"/>
+      <data name="csReferer" inType="win:AnsiString"/>
+      <data name="csversion" inType="win:UnicodeString"/>
+      <data name="cshost" inType="win:AnsiString"/>
+      <data name="scsubstatus" inType="win:UInt16"/>
+      <data name="CustomFields" inType="win:UnicodeString"/>
+     </template>
+    </templates>
+   </provider>
+  </events>
+ </instrumentation>
+ <localization>
+  <resources culture="en-US">
+   <stringTable>
+    <string id="task_task_0" value="task_0"/>
+   </stringTable>
+  </resources>
+ </localization>
+</instrumentationManifest>
