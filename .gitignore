@@ -1,6 +1,7 @@
 bin/
 obj/
 packages/
+TestResults/
 *.dll
 *.suo
 *.user
