@@ -54,7 +54,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IISTraceEvent\IISTraceEvent.csproj">
+    <ProjectReference Include="..\..\IISTraceEvent\IISTraceEvent.csproj">
       <Project>{006b5002-ee7e-46db-9345-80199ca7b2d4}</Project>
       <Name>IISTraceEvent</Name>
     </ProjectReference>
