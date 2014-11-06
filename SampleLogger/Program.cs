@@ -31,6 +31,7 @@ namespace SampleLogger {
     private static void OnIISRequest(IISLogTraceData request) {
       Console.WriteLine(request.Dump(true));
       Console.WriteLine("*******************");
+      //Console.WriteLine("{0} {1}", request.Cs_method, request.Cs_uri_stem);
     }
   }
 }

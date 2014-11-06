@@ -173,24 +173,60 @@ namespace Winterdom.Diagnostics.Tracing.IISTraceEvent {
       return sb;
     }
 
-    static readonly int[] FieldSizes = new int[] {
-      4, 0, 0, 0, 0, 0,
-      0, 0, -1, 0, -1,
-      2, 4, 8, 8, 8,
-      2, -1, -1, -1,
-      0, -1, 2, 0
+
+    enum Types {
+      UInt16,
+      UInt32,
+      UInt64,
+      UnicodeString,
+      AnsiString 
+    }
+
+    private static readonly Types[] FieldTypes = new Types[] {
+      Types.UInt32,
+      Types.UnicodeString,
+      Types.UnicodeString,
+      Types.UnicodeString,
+      Types.UnicodeString,
+      Types.UnicodeString,
+      Types.UnicodeString,
+      Types.UnicodeString,
+      Types.AnsiString,
+      Types.UnicodeString,
+      Types.AnsiString,
+      Types.UInt16,
+      Types.UInt32,
+      Types.UInt64,
+      Types.UInt64,
+      Types.UInt64,
+      Types.UInt16,
+      Types.AnsiString,
+      Types.AnsiString,
+      Types.AnsiString,
+      Types.UnicodeString,
+      Types.AnsiString,
+      Types.UInt16,
+      Types.UnicodeString
     };
 
     private int GetOffsetForField(int index) {
       int offset = 0;
       for ( int i = 1; i <= index; i++ ) {
-        switch ( FieldSizes[i - 1] ) {
-          case -1: offset = SkipUTF8String(offset); break;
-          case 0: offset = SkipUnicodeString(offset); break;
-          default: offset += FieldSizes[i - 1]; break;
-        }
+        offset = AddSizeOf(FieldTypes[i - 1], offset);
       }
-        return offset;
+      return offset;
+    }
+
+    private int AddSizeOf(Types type, int offset) {
+      switch ( type ) {
+        case Types.UInt16: return offset + sizeof(short);
+        case Types.UInt32: return offset + sizeof(int);
+        case Types.UInt64: return offset + sizeof(long);
+        case Types.UnicodeString: return SkipUnicodeString(offset);
+        case Types.AnsiString: return SkipUTF8String(offset);
+        default:
+          throw new NotSupportedException("Data type not supported");
+      }
     }
   }
 }
