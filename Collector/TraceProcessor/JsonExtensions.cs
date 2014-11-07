@@ -33,6 +33,8 @@ namespace Winterdom.Diagnostics.TraceProcessor {
       WriteProperty(writer, "processId", traceEvent.ProcessID);
       WriteProperty(writer, "processName", traceEvent.ProcessName);
       WriteProperty(writer, "threadId", traceEvent.ThreadID);
+      WriteProperty(writer, "activityId", traceEvent.ActivityID);
+      WriteProperty(writer, "relatedActivityId", traceEvent.RelatedActivityID);
       WriteProperty(writer, "eventName", traceEvent.EventName);
       WriteProperty(writer, "timeStamp", traceEvent.TimeStamp);
       WriteProperty(writer, "id", traceEvent.ID);
