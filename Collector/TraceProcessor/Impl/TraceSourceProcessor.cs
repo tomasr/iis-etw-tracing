@@ -21,16 +21,29 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       this.subscription = eventStream.Subscribe(this);
     }
 
-    public void Stop() {
+    public async Task Stop() {
       if ( this.subscription != null ) {
         this.subscription.Dispose();
         this.subscription = null;
       }
+      if ( this.eventProcessor != null ) {
+        var ep = this.eventProcessor;
+        this.eventProcessor = null;
+        // ensure all events are processed
+        // and after that clean up around the processor
+        var task = ep.Flush();
+        await task;
+        ReleaseEventProcessor(ep);
+      }
+    }
+
+    private void ReleaseEventProcessor(IEventProcessor ep) {
+      // TODO: add tracing
+      ep.Dispose();
     }
 
 
     void IObserver<TraceEvent>.OnCompleted() {
-      this.Stop();
     }
 
     void IObserver<TraceEvent>.OnError(Exception error) {

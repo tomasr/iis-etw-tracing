@@ -25,15 +25,19 @@ namespace TraceProcessor.Tests {
       sourceProc.Start(observable);
       source.Process();
       source.StopProcessing();
-      sourceProc.Stop();
+      sourceProc.Stop().Wait();
 
       Assert.AreEqual(9, counter.GetCount());
+      Assert.IsTrue(counter.FlushCalled);
+      Assert.IsTrue(counter.DisposeCalled);
     }
 
 
     class CountingProcessor : IEventProcessor {
 
       private int count = 0;
+      public bool FlushCalled { get; private set; }
+      public bool DisposeCalled { get; private set; }
 
       public Task<TraceEvent> Process(TraceEvent traceEvent) {
         Interlocked.Increment(ref count);
@@ -42,6 +46,13 @@ namespace TraceProcessor.Tests {
 
       public int GetCount() {
         return Interlocked.Exchange(ref count, 0);
+      }
+      public Task Flush() {
+        FlushCalled = true;
+        return Task.FromResult(0);
+      }
+      public void Dispose() {
+        DisposeCalled = true;
       }
     }
   }

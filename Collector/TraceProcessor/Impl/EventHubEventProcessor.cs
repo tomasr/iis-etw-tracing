@@ -26,6 +26,12 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       await eventHub.SendAsync(eventData);
       return traceEvent;
     }
+    public Task Flush() {
+      return Task.FromResult(0);
+    }
+
+    public void Dispose() {
+    }
 
     private byte[] EventToBytes(TraceEvent traceEvent) {
       using ( MemoryStream ms = new MemoryStream() ) {

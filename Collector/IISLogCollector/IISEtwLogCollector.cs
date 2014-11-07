@@ -43,7 +43,7 @@ namespace IISLogCollector {
         this.eventSource.StopProcessing();
       }
       if ( this.sourceProcessor != null ) {
-        this.sourceProcessor.Stop();
+        this.sourceProcessor.Stop().Wait();
       }
     }
 

@@ -11,6 +11,6 @@ namespace Winterdom.Diagnostics.TraceProcessor {
   /// </summary>
   public interface ITraceSourceProcessor {
     void Start(IObservable<TraceEvent> eventStream);
-    void Stop();
+    Task Stop();
   }
 }

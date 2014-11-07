@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor {
   /// <summary>
-  /// Processes a single event at atime
+  /// Processes a single event at a time
   /// </summary>
-  public interface IEventProcessor {
+  public interface IEventProcessor : IDisposable {
     Task<TraceEvent> Process(TraceEvent traceEvent);
+    Task Flush();
   }
 }
