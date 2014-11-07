@@ -66,6 +66,10 @@
       <Project>{006b5002-ee7e-46db-9345-80199ca7b2d4}</Project>
       <Name>IISTraceEvent</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TraceProcessor\TraceProcessor.csproj">
+      <Project>{afbed2c0-5d28-449e-b047-077b533c1852}</Project>
+      <Name>TraceProcessor</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="iis.etl">

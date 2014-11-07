@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Winterdom.Diagnostics.Tracing.IISTraceEvent;
-using Winterdom.Diagnostics.Tracing.IISTraceProcessor;
+using Winterdom.Diagnostics.TraceProcessor;
 
 namespace TraceProcessor.Tests {
   [TestClass]

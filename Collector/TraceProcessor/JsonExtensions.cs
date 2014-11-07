@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winterdom.Diagnostics.Tracing.IISTraceProcessor {
+namespace Winterdom.Diagnostics.TraceProcessor {
   public static class JsonExtensions {
     public static String ToJson(this TraceEvent traceEvent) {
       StringWriter sw = new StringWriter();

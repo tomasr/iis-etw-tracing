@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winterdom.Diagnostics.Tracing.IISTraceProcessor {
+namespace Winterdom.Diagnostics.TraceProcessor {
   public static class BinHexConverter {
     public static String ToBinHex(byte[] data) {
       if ( data.Length == 0 ) {

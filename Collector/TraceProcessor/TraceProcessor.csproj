@@ -7,8 +7,8 @@
     <ProjectGuid>{AFBED2C0-5D28-449E-B047-077B533C1852}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Winterdom.Diagnostics.Tracing.IISTraceProcessor</RootNamespace>
-    <AssemblyName>Winterdom.Diagnostics.Tracing.IISTraceProcessor</AssemblyName>
+    <RootNamespace>Winterdom.Diagnostics.TraceProcessor</RootNamespace>
+    <AssemblyName>Winterdom.Diagnostics.TraceProcessor</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>3523002b</NuGetPackageImportStamp>
