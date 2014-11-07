@@ -58,6 +58,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="BasicPartitionKeyGeneratorTests.cs" />
     <Compile Include="JsonExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

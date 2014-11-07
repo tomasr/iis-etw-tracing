@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinHexConverter.cs" />
+    <Compile Include="Impl\BasicPartitionKeyGenerator.cs" />
     <Compile Include="IPartitionKeyGenerator.cs" />
     <Compile Include="JsonExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
