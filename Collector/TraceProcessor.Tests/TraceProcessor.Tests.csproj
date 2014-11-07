@@ -58,9 +58,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="BaseEtwTraceTests.cs" />
     <Compile Include="BasicPartitionKeyGeneratorTests.cs" />
     <Compile Include="JsonExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TraceSourceProcessorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\IISTraceEvent\IISTraceEvent.csproj">

@@ -11,12 +11,11 @@ using Winterdom.Diagnostics.Tracing.IISTraceEvent;
 
 namespace TraceProcessor.Tests {
   [TestClass]
-  [DeploymentItem("iis.etl")]
-  public class BasicPartitionKeyGeneratorTests {
+  public class BasicPartitionKeyGeneratorTests : BaseEtwTraceTests {
 
     [TestMethod]
     public void PartitionKeyIncludesTraceProvider() {
-      var traceEvent = LoadSampleTrace("iis.etl").First();
+      var traceEvent = LoadSampleTrace().First();
       IPartitionKeyGenerator gen = new BasicPartitionKeyGenerator();
       String key = gen.GetKey(traceEvent);
       Assert.IsTrue(key.IndexOf(traceEvent.ProviderGuid.ToString()) >= 0);
@@ -24,21 +23,11 @@ namespace TraceProcessor.Tests {
 
     [TestMethod]
     public void PartitionKeyIncludesMachineName() {
-      var traceEvent = LoadSampleTrace("iis.etl").First();
+      var traceEvent = LoadSampleTrace().First();
       IPartitionKeyGenerator gen = new BasicPartitionKeyGenerator();
       String key = gen.GetKey(traceEvent);
       Assert.IsTrue(key.IndexOf(Environment.MachineName) >= 0);
     }
 
-    private IEnumerable<TraceEvent> LoadSampleTrace(string file) {
-      var traceSource = new ETWTraceEventSource(file);
-      var parser = new IISLogTraceEventParser(traceSource);
-      List<TraceEvent> events = new List<TraceEvent>();
-      parser.All += e => {
-        events.Add(e.Clone());
-      };
-      traceSource.Process();
-      return events;
-    }
   }
 }

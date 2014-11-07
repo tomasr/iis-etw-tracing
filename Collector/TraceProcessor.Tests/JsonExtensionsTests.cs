@@ -12,11 +12,10 @@ using Winterdom.Diagnostics.TraceProcessor;
 
 namespace TraceProcessor.Tests {
   [TestClass]
-  [DeploymentItem("iis.etl")]
-  public class JsonExtensionsTests {
+  public class JsonExtensionsTests : BaseEtwTraceTests {
     [TestMethod]
     public void IisEventToJson() {
-      var traceEvents = LoadSampleTrace("iis.etl");
+      var traceEvents = LoadSampleTrace();
       String json = traceEvents.First().ToJson();
       using ( var reader = new JsonTextReader(new StringReader(json)) ) {
         JObject obj = (JObject)JToken.ReadFrom(reader);
@@ -26,7 +25,7 @@ namespace TraceProcessor.Tests {
 
     [TestMethod]
     public void IisEventToJson_HasHeaderData() {
-      var traceEvents = LoadSampleTrace("iis.etl");
+      var traceEvents = LoadSampleTrace();
       var te = traceEvents.First();
       String json = te.ToJson();
       using ( var reader = new JsonTextReader(new StringReader(json)) ) {
@@ -46,7 +45,7 @@ namespace TraceProcessor.Tests {
 
     [TestMethod]
     public void IisEventToJson_HasPayload() {
-      var traceEvents = LoadSampleTrace("iis.etl");
+      var traceEvents = LoadSampleTrace();
       var te = traceEvents.First();
       String json = te.ToJson();
       using ( var reader = new JsonTextReader(new StringReader(json)) ) {
@@ -60,7 +59,7 @@ namespace TraceProcessor.Tests {
 
     [TestMethod]
     public void IisEventToJson_HasEventData() {
-      var traceEvents = LoadSampleTrace("iis.etl");
+      var traceEvents = LoadSampleTrace();
       var te = traceEvents.First();
       String json = te.ToJson();
       using ( var reader = new JsonTextReader(new StringReader(json)) ) {
@@ -72,17 +71,6 @@ namespace TraceProcessor.Tests {
         Assert.AreEqual("/", (String)data["cs_uri_stem"]);
         Assert.AreEqual(80, (int)data["s_port"]);
       }
-    }
-
-    private IEnumerable<TraceEvent> LoadSampleTrace(string file) {
-      var traceSource = new ETWTraceEventSource(file);
-      var parser = new IISLogTraceEventParser(traceSource);
-      List<TraceEvent> events = new List<TraceEvent>();
-      parser.IISLog += e => {
-        events.Add(e.Clone());
-      };
-      traceSource.Process();
-      return events;
     }
   }
 }

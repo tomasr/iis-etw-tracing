@@ -9,16 +9,21 @@ using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor {
   public static class JsonExtensions {
-    public static String ToJson(this TraceEvent traceEvent) {
-      StringWriter sw = new StringWriter();
-      using ( var writer = new JsonTextWriter(sw) ) {
+    public static void ToJson(this TraceEvent traceEvent, TextWriter tw) {
+      using ( var writer = new JsonTextWriter(tw) ) {
         writer.WriteStartObject();
         WriteHeader(writer, traceEvent);
         WriteEventData(writer, traceEvent);
         WritePayload(writer, traceEvent);
         writer.WriteEndObject();
       }
-      return sw.ToString();
+    }
+    public static String ToJson(this TraceEvent traceEvent) {
+      using ( StringWriter sw = new StringWriter() ) {
+        ToJson(traceEvent, sw);
+        sw.Flush();
+        return sw.ToString();
+      }
     }
 
     private static void WriteHeader(JsonTextWriter writer, TraceEvent traceEvent) {
