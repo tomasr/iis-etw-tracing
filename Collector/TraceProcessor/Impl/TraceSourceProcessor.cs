@@ -38,8 +38,12 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     }
 
     void IObserver<TraceEvent>.OnNext(TraceEvent traceEvent) {
-      this.eventProcessor.Process(traceEvent);
-      // TODO: implement checkpointing
+      this.eventProcessor.Process(traceEvent)
+        .ContinueWith(OnEventProcessingComplete);
+    }
+
+    private void OnEventProcessingComplete(Task<TraceEvent> task) {
+      // TODO: figure out something here :)
     }
   }
 }

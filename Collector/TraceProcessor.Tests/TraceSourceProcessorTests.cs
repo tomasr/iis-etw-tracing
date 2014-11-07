@@ -35,9 +35,9 @@ namespace TraceProcessor.Tests {
 
       private int count = 0;
 
-      public Task Process(TraceEvent traceEvent) {
+      public Task<TraceEvent> Process(TraceEvent traceEvent) {
         Interlocked.Increment(ref count);
-        return Task.FromResult(0);
+        return Task.FromResult(traceEvent);
       }
 
       public int GetCount() {

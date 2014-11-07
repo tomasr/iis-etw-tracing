@@ -10,6 +10,6 @@ namespace Winterdom.Diagnostics.TraceProcessor {
   /// Processes a single event at atime
   /// </summary>
   public interface IEventProcessor {
-    Task Process(TraceEvent traceEvent);
+    Task<TraceEvent> Process(TraceEvent traceEvent);
   }
 }

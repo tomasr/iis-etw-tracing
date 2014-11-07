@@ -12,17 +12,19 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
   public class EventHubEventProcessor : IEventProcessor {
     private IPartitionKeyGenerator keyGenerator;
     private EventHubClient eventHubClient;
+    private object clientLock = new object();
 
     public EventHubEventProcessor(IPartitionKeyGenerator generator) {
       this.keyGenerator = generator;
     }
-    public async Task Process(TraceEvent traceEvent) {
+    public async Task<TraceEvent> Process(TraceEvent traceEvent) {
       byte[] eventBody = EventToBytes(traceEvent);
       EventData eventData = new EventData(eventBody);
       eventData.PartitionKey = keyGenerator.GetKey(traceEvent);
 
       var eventHub = GetOrCreateClient();
       await eventHub.SendAsync(eventData);
+      return traceEvent;
     }
 
     private byte[] EventToBytes(TraceEvent traceEvent) {
@@ -37,13 +39,17 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
 
     private EventHubClient GetOrCreateClient() {
       if ( this.eventHubClient == null ) {
-        String connectionString = 
-          ConfigurationManager.AppSettings["EtwHubConnectionString"];
-        String eventHubName = 
-          ConfigurationManager.AppSettings["EtwEventHubName"];
-        var factory = 
-          MessagingFactory.CreateFromConnectionString(connectionString);
-        this.eventHubClient = factory.CreateEventHubClient(eventHubName);
+        lock ( this.clientLock ) {
+          if ( this.eventHubClient == null ) {
+            String connectionString = 
+              ConfigurationManager.AppSettings["EtwHubConnectionString"];
+            String eventHubName = 
+              ConfigurationManager.AppSettings["EtwEventHubName"];
+            var factory = 
+              MessagingFactory.CreateFromConnectionString(connectionString);
+            this.eventHubClient = factory.CreateEventHubClient(eventHubName);
+          }
+        }
       }
       return this.eventHubClient;
     }
