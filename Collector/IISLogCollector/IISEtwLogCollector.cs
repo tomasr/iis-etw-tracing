@@ -35,7 +35,7 @@ namespace IISLogCollector {
         IISLogTraceEventParser.ProviderName, null
       );
       this.sourceProcessor.Start(this.observableStream);
-      this.eventSource.Process();
+      new Task(Process).Start();
     }
 
     public void Stop() {
@@ -57,6 +57,10 @@ namespace IISLogCollector {
         this.eventSession = null;
       }
       this.eventParser = null;
+    }
+
+    private void Process() {
+      this.eventSource.Process();
     }
   }
 }

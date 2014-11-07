@@ -43,6 +43,11 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     }
 
     private void OnEventProcessingComplete(Task<TraceEvent> task) {
+      if ( task.IsFaulted ) {
+        Console.WriteLine(task.Exception);
+      } else {
+        Console.WriteLine(task.Result.Dump(true));
+      }
       // TODO: figure out something here :)
     }
   }

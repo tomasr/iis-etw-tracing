@@ -13,8 +13,8 @@ namespace IISLogCollector {
       var eventProcessor = new EventHubEventProcessor(keyGenerator);
       var processor = new TraceSourceProcessor(eventProcessor);
       using ( var collector = new IISEtwLogCollector(processor) ) {
-        collector.Start();
         Console.WriteLine("Starting collection...");
+        collector.Start();
         Console.ReadLine();
         collector.Stop();
       }

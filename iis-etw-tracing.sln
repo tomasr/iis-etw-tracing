@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraceProcessor", "Collector
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraceProcessor.Tests", "Collector\TraceProcessor.Tests\TraceProcessor.Tests.csproj", "{F06244D4-313C-4B2C-AC24-F7B479014482}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IISLogCollector", "Collector\IISLogCollector\IISLogCollector.csproj", "{F279711D-D760-4815-8750-E60B449ED50B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{F06244D4-313C-4B2C-AC24-F7B479014482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F06244D4-313C-4B2C-AC24-F7B479014482}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F06244D4-313C-4B2C-AC24-F7B479014482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F279711D-D760-4815-8750-E60B449ED50B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F279711D-D760-4815-8750-E60B449ED50B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F279711D-D760-4815-8750-E60B449ED50B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F279711D-D760-4815-8750-E60B449ED50B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,5 +56,6 @@ Global
 		{59E42D48-4A46-4791-A05F-BA42759A6B29} = {98B25BDD-A119-4F08-8BD1-EA0E77FDEE41}
 		{AFBED2C0-5D28-449E-B047-077B533C1852} = {B6F8E600-49F3-416D-B0E7-0AC110F76D2B}
 		{F06244D4-313C-4B2C-AC24-F7B479014482} = {B6F8E600-49F3-416D-B0E7-0AC110F76D2B}
+		{F279711D-D760-4815-8750-E60B449ED50B} = {B6F8E600-49F3-416D-B0E7-0AC110F76D2B}
 	EndGlobalSection
 EndGlobal

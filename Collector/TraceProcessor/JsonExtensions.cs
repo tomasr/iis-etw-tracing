@@ -10,13 +10,12 @@ using System.Threading.Tasks;
 namespace Winterdom.Diagnostics.TraceProcessor {
   public static class JsonExtensions {
     public static void ToJson(this TraceEvent traceEvent, TextWriter tw) {
-      using ( var writer = new JsonTextWriter(tw) ) {
-        writer.WriteStartObject();
-        WriteHeader(writer, traceEvent);
-        WriteEventData(writer, traceEvent);
-        WritePayload(writer, traceEvent);
-        writer.WriteEndObject();
-      }
+      var writer = new JsonTextWriter(tw);
+      writer.WriteStartObject();
+      WriteHeader(writer, traceEvent);
+      WriteEventData(writer, traceEvent);
+      WritePayload(writer, traceEvent);
+      writer.WriteEndObject();
     }
     public static String ToJson(this TraceEvent traceEvent) {
       using ( StringWriter sw = new StringWriter() ) {
