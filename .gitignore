@@ -5,3 +5,4 @@ TestResults/
 *.dll
 *.suo
 *.user
+appSettings.config
