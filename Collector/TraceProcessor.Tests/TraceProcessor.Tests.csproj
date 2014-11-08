@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="BaseEtwTraceTests.cs" />
     <Compile Include="BasicPartitionKeyGeneratorTests.cs" />
+    <Compile Include="BatchTests.cs" />
     <Compile Include="JsonExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TraceSourceProcessorTests.cs" />

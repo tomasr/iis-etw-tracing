@@ -3,15 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor.Impl {
   public class TraceSourceProcessor : ITraceSourceProcessor, IObserver<TraceEvent> {
     private IEventProcessor eventProcessor;
     private IDisposable subscription;
+    private long eventCount;
 
     public TraceSourceProcessor(IEventProcessor processor) {
       this.eventProcessor = processor;
+      this.eventCount = 0;
     }
 
     public void Start(IObservable<TraceEvent> eventStream) {
@@ -31,8 +34,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
         this.eventProcessor = null;
         // ensure all events are processed
         // and after that clean up around the processor
-        var task = ep.Flush();
-        await task;
+        await ep.Flush();
         ReleaseEventProcessor(ep);
       }
     }
@@ -57,11 +59,14 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
 
     private void OnEventProcessingComplete(Task<TraceEvent> task) {
       if ( task.IsFaulted ) {
+        // TODO: figure out proper error handling here :)
         Console.WriteLine(task.Exception);
       } else {
-        Console.WriteLine(task.Result.Dump(true));
+        long count = Interlocked.Increment(ref this.eventCount);
+        if ( count % 100 == 0 ) {
+          Console.WriteLine("Processed {0} events", count);
+        }
       }
-      // TODO: figure out something here :)
     }
   }
 }
