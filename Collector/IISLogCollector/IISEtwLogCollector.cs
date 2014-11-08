@@ -2,6 +2,7 @@
 using Microsoft.Diagnostics.Tracing.Session;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,8 @@ using Winterdom.Diagnostics.TraceProcessor;
 using Winterdom.Diagnostics.Tracing.IISTraceEvent;
 
 namespace IISLogCollector {
-  public class IISEtwLogCollector : IDisposable {
+  [Export(typeof(ILogCollectorService))]
+  public class IISEtwLogCollector : ILogCollectorService, IDisposable {
     public const String SessionName = "iis-etw-collector";
     private TraceEventSession eventSession;
     private ETWTraceEventSource eventSource;
@@ -17,6 +19,7 @@ namespace IISLogCollector {
     private IObservable<TraceEvent> observableStream;
     private ITraceSourceProcessor sourceProcessor;
 
+    [ImportingConstructor]
     public IISEtwLogCollector(ITraceSourceProcessor processor) {
       this.sourceProcessor = processor;
     }

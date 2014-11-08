@@ -9,10 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.ComponentModel.Composition;
 
 namespace Winterdom.Diagnostics.TraceProcessor.Impl {
+  [Export(typeof(IEventProcessor))]
   public class EventHubEventProcessor : IEventProcessor {
-    const int MaxBatchSize = 128 * 1024;
+    const int MaxBatchSize = 192 * 1024;
     private IPartitionKeyGenerator keyGenerator;
     private EventHubClient eventHubClient;
     private Batch<EventData> currentBatch;
@@ -20,6 +22,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     private Task flusher;
     private CancellationTokenSource done;
 
+    [ImportingConstructor]
     public EventHubEventProcessor(IPartitionKeyGenerator generator) {
       this.keyGenerator = generator;
       this.currentBatch = Batch<EventData>.Empty(MaxBatchSize);
@@ -58,15 +61,19 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     public void Dispose() {
       // tell our code we're not taking in any more requests
       this.done.Cancel();
-      // wait until all pending batches are flushed
+      // then wait until all pending batches are flushed
       this.flusher.Wait();
       this.eventHubClient.Close();
     }
 
     private void FlushBatch(IEnumerable<EventData> events) {
       var eventHub = GetOrCreateClient();
-      eventHub.SendBatch(events);
-      Console.WriteLine("Flushed {0} events.", events.Count());
+      try {
+        eventHub.SendBatch(events);
+        Console.WriteLine("Flushed {0} events.", events.Count());
+      } catch ( Exception ex ){
+        eventHub.Abort();
+      }
     }
 
     private void Flusher() {
@@ -96,7 +103,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     }
 
     private EventHubClient GetOrCreateClient() {
-      if ( this.eventHubClient == null ) {
+      if ( this.eventHubClient == null || this.eventHubClient.IsClosed ) {
         String connectionString = 
           ConfigurationManager.AppSettings["EtwHubConnectionString"];
         String eventHubName = 

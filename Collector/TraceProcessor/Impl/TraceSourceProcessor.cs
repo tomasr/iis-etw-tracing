@@ -1,17 +1,20 @@
 ﻿using Microsoft.Diagnostics.Tracing;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor.Impl {
+  [Export(typeof(ITraceSourceProcessor))]
   public class TraceSourceProcessor : ITraceSourceProcessor, IObserver<TraceEvent> {
     private IEventProcessor eventProcessor;
     private IDisposable subscription;
     private long eventCount;
 
+    [ImportingConstructor]
     public TraceSourceProcessor(IEventProcessor processor) {
       this.eventProcessor = processor;
       this.eventCount = 0;
