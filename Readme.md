@@ -38,6 +38,23 @@ class Program {
 }
 ```
 
+## Pushing events to Azure
+The second part of this sample is a more interesting ETW event collector. This currently is a simple console application (IISLogCollector), but will later turn into a proper Windows NT service.
+
+This collector will capture ETW events in near-real time and can push said events to an [Azure Event Hub](http://azure.microsoft.com/en-us/services/event-hubs/). To use this feature, you'll need to first configure a few things:
+
+* Create a new Event Hub in the azure portal. You should also add a new Shared Access Policy (SAS) for the collector, which only requires "Send" permissions.
+* Create an `appSettings.config` file to the IISLogCollector project and ensure it is copied to the output folder during the build.
+* Edit the `appSettings.config` file to configure your Event Hub connection information:
+
+```XML
+<add key="EtwHubConnectionString"
+     value="<event hub connection string>" />
+<add key="EtwEventHubName" value="<event hub name>"/>
+```
+
+**Note:** This is just a sample, lacking most error handling and won't be able to handle a large number of events without some work. It is, however, useful for playing with Azure services :).
+
 ## About the code
 The code for the TraceEventParser is hand-written. This was my first attempt at writing such a thing and I wanted to better understand how it all worked under the hood. I'm sure I missed a few things here and there.
 
