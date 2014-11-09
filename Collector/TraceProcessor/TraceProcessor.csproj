@@ -62,10 +62,12 @@
     <Compile Include="BinHexConverter.cs" />
     <Compile Include="Batch.cs" />
     <Compile Include="IEventProcessor.cs" />
+    <Compile Include="Impl\AppSettings.cs" />
     <Compile Include="Impl\BasicPartitionKeyGenerator.cs" />
     <Compile Include="Impl\EventHubEventProcessor.cs" />
     <Compile Include="Impl\TraceSourceProcessor.cs" />
     <Compile Include="IPartitionKeyGenerator.cs" />
+    <Compile Include="ISettings.cs" />
     <Compile Include="ITraceSourceProcessor.cs" />
     <Compile Include="JsonExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

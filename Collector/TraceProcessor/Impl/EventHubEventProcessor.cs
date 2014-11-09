@@ -15,8 +15,9 @@ using System.Diagnostics;
 namespace Winterdom.Diagnostics.TraceProcessor.Impl {
   [Export(typeof(IEventProcessor))]
   public class EventHubEventProcessor : IEventProcessor {
-    const int MaxBatchSize = 192 * 1024;
+    public int MaxBatchSize { get; private set; }
     private IPartitionKeyGenerator keyGenerator;
+    private ISettings settings;
     private EventHubClient eventHubClient;
     private Batch<EventData> currentBatch;
     private BlockingCollection<Batch<EventData>> pendingFlushList;
@@ -24,8 +25,12 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     private CancellationTokenSource done;
 
     [ImportingConstructor]
-    public EventHubEventProcessor(IPartitionKeyGenerator generator) {
+    public EventHubEventProcessor(
+          IPartitionKeyGenerator generator,
+          ISettings settings) {
+      this.MaxBatchSize = 1024 * settings.GetInt32("MaxBatchSizeKB", 192);
       this.keyGenerator = generator;
+      this.settings = settings;
       this.currentBatch = Batch<EventData>.Empty(MaxBatchSize);
       this.pendingFlushList = new BlockingCollection<Batch<EventData>>();
 
@@ -106,10 +111,8 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
 
     private EventHubClient GetOrCreateClient() {
       if ( this.eventHubClient == null || this.eventHubClient.IsClosed ) {
-        String connectionString = 
-          ConfigurationManager.AppSettings["EtwHubConnectionString"];
-        String eventHubName = 
-          ConfigurationManager.AppSettings["EtwEventHubName"];
+        String connectionString = this.settings.GetString("EtwHubConnectionString");
+        String eventHubName = this.settings.GetString("EtwEventHubName");
         var factory = 
           MessagingFactory.CreateFromConnectionString(connectionString);
         this.eventHubClient = factory.CreateEventHubClient(eventHubName);
