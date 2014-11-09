@@ -26,7 +26,7 @@ namespace IISLogCollector {
 
     public void Start() {
       this.eventSession = new TraceEventSession(
-        SessionName, TraceEventSessionOptions.NoRestartOnCreate
+        SessionName, TraceEventSessionOptions.Create
       );
       this.eventSession.EnableProvider(IISLogTraceEventParser.ProviderName);
       this.eventSource = new ETWTraceEventSource(

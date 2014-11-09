@@ -69,7 +69,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       } else {
         long count = Interlocked.Increment(ref this.eventCount);
         if ( count % 100 == 0 ) {
-          Console.WriteLine("Processed {0} events", count);
+          Trace.WriteLine(String.Format("Processed {0} events", count));
         }
       }
     }
