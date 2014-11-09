@@ -48,9 +48,16 @@ This collector will capture ETW events in near-real time and can push said event
 * Edit the `appSettings.config` file to configure your Event Hub connection information:
 
 ```XML
+<!-- EventHub connection string -->
 <add key="EtwHubConnectionString"
      value="<event hub connection string>" />
+<!-- EventHub Name -->
 <add key="EtwEventHubName" value="<event hub name>"/>
+<!-- 
+   Maximum size in KB of the batch for sending data 
+   to Event Hub (should be less than 256KB by default)
+-->
+<add key="MaxBatchSizeKB" value="<event hub name>"/>
 ```
 
 **Note:** This is just a sample, lacking most error handling and won't be able to handle a large number of events without some work. It is, however, useful for playing with Azure services :).
