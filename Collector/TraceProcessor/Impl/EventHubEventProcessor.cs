@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 
 namespace Winterdom.Diagnostics.TraceProcessor.Impl {
   [Export(typeof(IEventProcessor))]
@@ -70,9 +71,10 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       var eventHub = GetOrCreateClient();
       try {
         eventHub.SendBatch(events);
-        Console.WriteLine("Flushed {0} events.", events.Count());
+        Trace.WriteLine(String.Format("Flushed {0} events.", events.Count()));
       } catch ( Exception ex ){
         eventHub.Abort();
+        Trace.WriteLine(String.Format("Error On Send: {0}.", ex));
       }
     }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -52,6 +53,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     }
 
     void IObserver<TraceEvent>.OnError(Exception error) {
+      Trace.WriteLine(String.Format("Error observed: {0}", error));
       // TODO: implement
     }
 
