@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor {
-  public static class JsonExtensions {
-    public static void ToJson(this TraceEvent traceEvent, TextWriter tw) {
+  public class ComplexJsonConverter : IJsonConverter {
+    public void ToJson(TraceEvent traceEvent, TextWriter tw) {
       var writer = new JsonTextWriter(tw);
       writer.WriteStartObject();
       WriteHeader(writer, traceEvent);
@@ -17,7 +17,7 @@ namespace Winterdom.Diagnostics.TraceProcessor {
       WritePayload(writer, traceEvent);
       writer.WriteEndObject();
     }
-    public static String ToJson(this TraceEvent traceEvent) {
+    public String ToJson(TraceEvent traceEvent) {
       using ( StringWriter sw = new StringWriter() ) {
         ToJson(traceEvent, sw);
         sw.Flush();

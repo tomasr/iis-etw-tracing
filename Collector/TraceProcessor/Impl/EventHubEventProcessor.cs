@@ -18,6 +18,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     public int MaxBatchSize { get; private set; }
     private IPartitionKeyGenerator keyGenerator;
     private ISettings settings;
+    private IJsonConverter jsonConverter;
     private EventHubClient eventHubClient;
     private Batch<EventData> currentBatch;
     private BlockingCollection<Batch<EventData>> pendingFlushList;
@@ -27,10 +28,12 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     [ImportingConstructor]
     public EventHubEventProcessor(
           IPartitionKeyGenerator generator,
-          ISettings settings) {
+          ISettings settings,
+          IJsonConverter jsonConverter) {
       this.MaxBatchSize = 1024 * settings.GetInt32("MaxBatchSizeKB", 192);
       this.keyGenerator = generator;
       this.settings = settings;
+      this.jsonConverter = jsonConverter;
       this.currentBatch = Batch<EventData>.Empty(MaxBatchSize);
       this.pendingFlushList = new BlockingCollection<Batch<EventData>>();
 
@@ -102,7 +105,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     private byte[] EventToBytes(TraceEvent traceEvent) {
       using ( MemoryStream ms = new MemoryStream() ) {
         using ( StreamWriter writer = new StreamWriter(ms, Encoding.UTF8) ) {
-          traceEvent.ToJson(writer);
+          jsonConverter.ToJson(traceEvent, writer);
           writer.Flush();
           return ms.ToArray();
         }

@@ -12,11 +12,11 @@ using Winterdom.Diagnostics.TraceProcessor;
 
 namespace TraceProcessor.Tests {
   [TestClass]
-  public class JsonExtensionsTests : BaseEtwTraceTests {
+  public class JsonConverterTests : BaseEtwTraceTests {
     [TestMethod]
     public void IisEventToJson() {
       var traceEvents = LoadSampleTrace();
-      String json = traceEvents.First().ToJson();
+      String json = ToJson(traceEvents.First());
       using ( var reader = new JsonTextReader(new StringReader(json)) ) {
         JObject obj = (JObject)JToken.ReadFrom(reader);
         Assert.IsNotNull(obj);
@@ -27,7 +27,7 @@ namespace TraceProcessor.Tests {
     public void IisEventToJson_HasHeaderData() {
       var traceEvents = LoadSampleTrace();
       var te = traceEvents.First();
-      String json = te.ToJson();
+      String json = ToJson(te);
       using ( var reader = new JsonTextReader(new StringReader(json)) ) {
         JObject obj = (JObject)JToken.ReadFrom(reader);
         JObject header = (JObject)obj["header"];
@@ -47,7 +47,7 @@ namespace TraceProcessor.Tests {
     public void IisEventToJson_HasPayload() {
       var traceEvents = LoadSampleTrace();
       var te = traceEvents.First();
-      String json = te.ToJson();
+      String json = ToJson(te);
       using ( var reader = new JsonTextReader(new StringReader(json)) ) {
         JObject obj = (JObject)JToken.ReadFrom(reader);
         byte[] payload = (byte[])obj["payload"];
@@ -61,7 +61,7 @@ namespace TraceProcessor.Tests {
     public void IisEventToJson_HasEventData() {
       var traceEvents = LoadSampleTrace();
       var te = traceEvents.First();
-      String json = te.ToJson();
+      String json = ToJson(te);
       using ( var reader = new JsonTextReader(new StringReader(json)) ) {
         JObject obj = (JObject)JToken.ReadFrom(reader);
         JObject data = (JObject)obj["event"];
@@ -71,6 +71,11 @@ namespace TraceProcessor.Tests {
         Assert.AreEqual("/", (String)data["cs_uri_stem"]);
         Assert.AreEqual(80, (int)data["s_port"]);
       }
+    }
+
+    private String ToJson(TraceEvent traceEvent) {
+      IJsonConverter converter = new ComplexJsonConverter();
+      return converter.ToJson(traceEvent);
     }
   }
 }
