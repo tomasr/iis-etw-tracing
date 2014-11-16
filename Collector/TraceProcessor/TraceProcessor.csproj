@@ -65,6 +65,7 @@
     <Compile Include="IJsonConverter.cs" />
     <Compile Include="Impl\AppSettings.cs" />
     <Compile Include="Impl\BasicPartitionKeyGenerator.cs" />
+    <Compile Include="Impl\FlatJsonConverter.cs" />
     <Compile Include="Impl\EventHubEventProcessor.cs" />
     <Compile Include="Impl\TraceSourceProcessor.cs" />
     <Compile Include="IPartitionKeyGenerator.cs" />

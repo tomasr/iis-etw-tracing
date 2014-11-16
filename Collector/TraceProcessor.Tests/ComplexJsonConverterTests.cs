@@ -12,7 +12,7 @@ using Winterdom.Diagnostics.TraceProcessor;
 
 namespace TraceProcessor.Tests {
   [TestClass]
-  public class JsonConverterTests : BaseEtwTraceTests {
+  public class ComplexJsonConverterTests : BaseEtwTraceTests {
     [TestMethod]
     public void IisEventToJson() {
       var traceEvents = LoadSampleTrace();
