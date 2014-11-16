@@ -63,7 +63,9 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     public Task Flush() {
       // flush any batches that haven't reached max size
       var batch = Interlocked.Exchange(ref this.currentBatch, Batch<EventData>.Empty(MaxBatchSize));
-      this.pendingFlushList.Add(batch);
+      if ( !batch.IsEmpty ) {
+        this.pendingFlushList.Add(batch);
+      }
       return Task.FromResult(0);
     }
 
@@ -72,7 +74,9 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       this.done.Cancel();
       // then wait until all pending batches are flushed
       this.flusher.Wait();
-      this.eventHubClient.Close();
+      if ( this.eventHubClient != null ) {
+        this.eventHubClient.Close();
+      }
     }
 
     private void FlushBatch(IEnumerable<EventData> events) {

@@ -15,6 +15,10 @@ namespace Winterdom.Diagnostics.TraceProcessor {
     private int batchSize;
     private Queue<TEntry> entries;
 
+    public bool IsEmpty {
+      get { return entries.Count == 0; }
+    }
+
     private Batch(int maxBatchSize) 
       : this(maxBatchSize, 0, new Queue<TEntry>()) {
     }
