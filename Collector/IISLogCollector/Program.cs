@@ -20,7 +20,7 @@ namespace IISLogCollector {
       AggregateCatalog catalog = new AggregateCatalog();
       catalog.Catalogs.Add(new AssemblyCatalog(itsType.Assembly));
       catalog.Catalogs.Add(new AssemblyCatalog(typeof(Program).Assembly));
-      CompositionContainer container = new CompositionContainer(catalog);
+      CompositionContainer container = new FlatCompositionContainer(catalog);
 
       Program program = new Program();
       container.SatisfyImportsOnce(program);
@@ -35,6 +35,24 @@ namespace IISLogCollector {
         Console.ReadLine();
         this.CollectorService.Stop();
       }
+    }
+  }
+
+  class FlatCompositionContainer : CompositionContainer {
+    public FlatCompositionContainer(AggregateCatalog catalog) : base(catalog) {
+    }
+
+    protected override IEnumerable<Export> GetExportsCore(ImportDefinition definition, AtomicComposition atomicComposition) {
+      var exports = base.GetExportsCore(definition, atomicComposition);
+      if ( definition.ContractName == typeof(IJsonConverter).FullName ) {
+        object format;
+        var r = from e in exports
+               where e.Metadata.TryGetValue("Format", out format)
+                  && String.Equals(format, "Flat")
+               select e;
+        return r;
+      }
+      return exports;
     }
   }
 }

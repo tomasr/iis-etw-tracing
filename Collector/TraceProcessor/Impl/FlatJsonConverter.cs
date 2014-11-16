@@ -2,12 +2,15 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor {
+  [Export(typeof(IJsonConverter))]
+  [JsonFormat(Format="Flat")]
   public class FlatJsonConverter : IJsonConverter {
     public void ToJson(TraceEvent traceEvent, TextWriter tw) {
       var writer = new JsonTextWriter(tw);

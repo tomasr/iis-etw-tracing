@@ -72,6 +72,7 @@
     <Compile Include="ISettings.cs" />
     <Compile Include="ITraceSourceProcessor.cs" />
     <Compile Include="Impl\ComplexJsonConverter.cs" />
+    <Compile Include="JsonFormatAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
