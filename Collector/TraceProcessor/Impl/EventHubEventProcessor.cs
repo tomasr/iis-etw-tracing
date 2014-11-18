@@ -17,9 +17,8 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
   public class EventHubEventProcessor : IEventProcessor {
     public int MaxBatchSize { get; private set; }
     private IPartitionKeyGenerator keyGenerator;
-    private ISettings settings;
     private IJsonConverter jsonConverter;
-    private EventHubClient eventHubClient;
+    private IBatchSender batchSender;
     private Batch<EventData> currentBatch;
     private BlockingCollection<Batch<EventData>> pendingFlushList;
     private Task flusher;
@@ -29,10 +28,11 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     public EventHubEventProcessor(
           IPartitionKeyGenerator generator,
           ISettings settings,
+          IBatchSender batchSender,
           IJsonConverter jsonConverter) {
       this.MaxBatchSize = 1024 * settings.GetInt32("MaxBatchSizeKB", 192);
       this.keyGenerator = generator;
-      this.settings = settings;
+      this.batchSender = batchSender;
       this.jsonConverter = jsonConverter;
       this.currentBatch = Batch<EventData>.Empty(MaxBatchSize);
       this.pendingFlushList = new BlockingCollection<Batch<EventData>>();
@@ -74,18 +74,14 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       this.done.Cancel();
       // then wait until all pending batches are flushed
       this.flusher.Wait();
-      if ( this.eventHubClient != null ) {
-        this.eventHubClient.Close();
-      }
+      this.batchSender.Close();
     }
 
-    private void FlushBatch(IEnumerable<EventData> events) {
-      var eventHub = GetOrCreateClient();
+    private void FlushBatch(Batch<EventData> events) {
       try {
-        eventHub.SendBatch(events);
-        Trace.WriteLine(String.Format("Flushed {0} events.", events.Count()));
+        batchSender.Send(events);
+        Trace.WriteLine(String.Format("Flushed {0} events.", events.Count));
       } catch ( Exception ex ){
-        eventHub.Abort();
         Trace.WriteLine(String.Format("Error On Send: {0}.", ex));
       }
     }
@@ -95,13 +91,13 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       try {
         var enumerable = this.pendingFlushList.GetConsumingEnumerable(cancellationToken);
         foreach ( var batch in enumerable ) {
-          FlushBatch(batch.Drain());
+          FlushBatch(batch);
         }
       } catch ( OperationCanceledException ) {
         // expected error
         // need get any remaning entries
         foreach ( var batch in this.pendingFlushList ) {
-          FlushBatch(batch.Drain());
+          FlushBatch(batch);
         }
       }
     }
@@ -116,15 +112,5 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       }
     }
 
-    private EventHubClient GetOrCreateClient() {
-      if ( this.eventHubClient == null || this.eventHubClient.IsClosed ) {
-        String connectionString = this.settings.GetString("EtwHubConnectionString");
-        String eventHubName = this.settings.GetString("EtwEventHubName");
-        var factory = 
-          MessagingFactory.CreateFromConnectionString(connectionString);
-        this.eventHubClient = factory.CreateEventHubClient(eventHubName);
-      }
-      return this.eventHubClient;
-    }
   }
 }

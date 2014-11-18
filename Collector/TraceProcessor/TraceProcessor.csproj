@@ -61,10 +61,12 @@
   <ItemGroup>
     <Compile Include="BinHexConverter.cs" />
     <Compile Include="Batch.cs" />
+    <Compile Include="IBatchSender.cs" />
     <Compile Include="IEventProcessor.cs" />
     <Compile Include="IJsonConverter.cs" />
     <Compile Include="Impl\AppSettings.cs" />
     <Compile Include="Impl\BasicPartitionKeyGenerator.cs" />
+    <Compile Include="Impl\BatchedEventHubSender.cs" />
     <Compile Include="Impl\FlatJsonConverter.cs" />
     <Compile Include="Impl\EventHubEventProcessor.cs" />
     <Compile Include="Impl\TraceSourceProcessor.cs" />
