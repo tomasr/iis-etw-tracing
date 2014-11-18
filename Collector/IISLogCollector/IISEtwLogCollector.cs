@@ -34,9 +34,7 @@ namespace IISLogCollector {
       );
       this.eventParser = new IISLogTraceEventParser(this.eventSource);
 
-      this.observableStream = this.eventParser.Observe(
-        IISLogTraceEventParser.ProviderName, null
-      );
+      this.observableStream = this.eventSource.ObserveAll();
       this.sourceProcessor.Start(this.observableStream);
       new Task(Process).Start();
     }
