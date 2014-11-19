@@ -11,6 +11,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
   public class BatchedEventHubSender : IBatchSender {
     private EventHubClient eventHubClient;
     private ISettings settings;
+    private Task sendInProgress;
 
     [ImportingConstructor]
     public BatchedEventHubSender(ISettings settings) {
@@ -27,7 +28,9 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     public async Task SendAsync(Batch<EventData> batch) {
       var client = GetOrCreateClient();
       if ( !batch.IsEmpty ) {
-        await client.SendBatchAsync(batch.Drain());
+        this.sendInProgress = client.SendBatchAsync(batch.Drain());
+        await this.sendInProgress;
+        this.sendInProgress = null;
       }
     }
 
@@ -38,6 +41,10 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     }
 
     public async Task CloseAsync() {
+      var task = this.sendInProgress;
+      if ( task != null ) {
+        await task;
+      }
       if ( this.eventHubClient != null && !this.eventHubClient.IsClosed ) {
         await this.eventHubClient.CloseAsync();
       }

@@ -69,6 +69,7 @@
     <Compile Include="Impl\BatchedEventHubSender.cs" />
     <Compile Include="Impl\FlatJsonConverter.cs" />
     <Compile Include="Impl\EventHubEventProcessor.cs" />
+    <Compile Include="Impl\MultiBatchSender.cs" />
     <Compile Include="Impl\TraceSourceProcessor.cs" />
     <Compile Include="IPartitionKeyGenerator.cs" />
     <Compile Include="ISettings.cs" />
