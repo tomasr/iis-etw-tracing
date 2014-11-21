@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor.Impl {
-  [Export(typeof(IBatchSender))]
   public class BatchedEventHubSender : IBatchSender {
     private EventHubClient eventHubClient;
     private ISettings settings;

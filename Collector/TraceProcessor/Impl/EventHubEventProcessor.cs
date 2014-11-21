@@ -23,6 +23,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     private BlockingCollection<Batch<EventData>> pendingFlushList;
     private Task flusher;
     private CancellationTokenSource done;
+    private long eventsProcessed;
 
     [ImportingConstructor]
     public EventHubEventProcessor(
@@ -36,6 +37,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       this.jsonConverter = jsonConverter;
       this.currentBatch = Batch<EventData>.Empty(MaxBatchSize);
       this.pendingFlushList = new BlockingCollection<Batch<EventData>>();
+      this.eventsProcessed = 0;
 
       this.done = new CancellationTokenSource();
       this.flusher = new Task(this.Flusher);
@@ -78,12 +80,16 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     }
 
     private void FlushBatch(Batch<EventData> events) {
-      try {
-        batchSender.Send(events);
-        Trace.WriteLine(String.Format("Flushed {0} events.", events.Count));
-      } catch ( Exception ex ){
-        Trace.WriteLine(String.Format("Error On Send: {0}.", ex));
-      }
+      var sendTask = batchSender.SendAsync(events);
+      sendTask.ContinueWith(result => {
+        if ( result.IsFaulted ) {
+          Trace.WriteLine(String.Format("Error On Send: {0}.", result.Exception));
+        } else {
+          // not thread safe!
+          this.eventsProcessed += events.Count;
+          Trace.WriteLine(String.Format("Flushed {0} events.", this.eventsProcessed));
+        }
+      });
     }
 
     private void Flusher() {
