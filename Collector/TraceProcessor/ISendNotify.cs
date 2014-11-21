@@ -6,9 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor {
-  public interface IBatchSender {
-    void SetNotify(ISendNotify sink);
-    void Send(Batch<EventData> batch);
-    void Close();
+  public interface ISendNotify {
+    void OnSendComplete(Batch<EventData> batch, Exception ex);
   }
 }

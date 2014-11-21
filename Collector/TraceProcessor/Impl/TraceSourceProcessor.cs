@@ -1,4 +1,5 @@
 ﻿using Microsoft.Diagnostics.Tracing;
+using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -10,15 +11,20 @@ using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor.Impl {
   [Export(typeof(ITraceSourceProcessor))]
-  public class TraceSourceProcessor : ITraceSourceProcessor, IObserver<TraceEvent> {
+  public class TraceSourceProcessor : ITraceSourceProcessor, IObserver<TraceEvent>, ISendNotify {
     private IEventProcessor eventProcessor;
     private IDisposable subscription;
     private long eventCount;
+    private long eventsProcessed;
+    private object eplock;
 
     [ImportingConstructor]
     public TraceSourceProcessor(IEventProcessor processor) {
       this.eventProcessor = processor;
       this.eventCount = 0;
+      this.eventsProcessed = 0;
+      this.eplock = new object();
+      processor.SetNotify(this);
     }
 
     public void Start(IObservable<TraceEvent> eventStream) {
@@ -48,8 +54,18 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
       ep.Dispose();
     }
 
-
     void IObserver<TraceEvent>.OnCompleted() {
+    }
+
+    void ISendNotify.OnSendComplete(Batch<EventData> batch, Exception error) {
+      if ( error != null ) {
+        Trace.WriteLine(String.Format("Batch send failed: {0}", error));
+      } else {
+        lock ( this.eplock ) {
+          this.eventsProcessed += batch.Count;
+          Trace.WriteLine(String.Format("Events flushed: {0}", this.eventsProcessed));
+        }
+      }
     }
 
     void IObserver<TraceEvent>.OnError(Exception error) {

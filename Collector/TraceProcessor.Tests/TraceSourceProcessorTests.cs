@@ -39,6 +39,9 @@ namespace TraceProcessor.Tests {
       public bool FlushCalled { get; private set; }
       public bool DisposeCalled { get; private set; }
 
+      public void SetNotify(ISendNotify sink) {
+      }
+
       public Task<TraceEvent> Process(TraceEvent traceEvent) {
         Interlocked.Increment(ref count);
         return Task.FromResult(traceEvent);

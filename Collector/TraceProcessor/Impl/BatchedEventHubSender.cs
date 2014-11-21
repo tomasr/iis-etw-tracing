@@ -1,51 +1,79 @@
 ﻿using Microsoft.ServiceBus.Messaging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Winterdom.Diagnostics.TraceProcessor.Impl {
   public class BatchedEventHubSender : IBatchSender {
     private EventHubClient eventHubClient;
     private ISettings settings;
-    private Task sendInProgress;
+    private BlockingCollection<Batch<EventData>> pendingFlushList;
+    private Task flusher;
+    private CancellationTokenSource done;
+    private ISendNotify notifySink;
 
     [ImportingConstructor]
     public BatchedEventHubSender(ISettings settings) {
       this.settings = settings;
+      this.pendingFlushList = new BlockingCollection<Batch<EventData>>();
+      this.done = new CancellationTokenSource();
+      this.flusher = new Task(this.Flusher);
+      this.flusher.Start();
+    }
+
+    public void SetNotify(ISendNotify sink) {
+      this.notifySink = sink;
     }
 
     public void Send(Batch<EventData> batch) {
-      var client = GetOrCreateClient();
-      if ( !batch.IsEmpty ) {
-        client.SendBatch(batch.Drain());
-      }
+      this.pendingFlushList.Add(batch);
     } 
 
-    public async Task SendAsync(Batch<EventData> batch) {
-      var client = GetOrCreateClient();
-      if ( !batch.IsEmpty ) {
-        this.sendInProgress = client.SendBatchAsync(batch.Drain());
-        await this.sendInProgress;
-        this.sendInProgress = null;
-      }
-    }
-
     public void Close() {
+      // tell our code we're not taking in any more requests
+      this.done.Cancel();
+      // then wait until all pending batches are flushed
+      this.flusher.Wait();
       if ( this.eventHubClient != null && !this.eventHubClient.IsClosed ) {
         this.eventHubClient.Close();
       }
     }
 
-    public async Task CloseAsync() {
-      var task = this.sendInProgress;
-      if ( task != null ) {
-        await task;
+    private void Flusher() {
+      var cancellationToken = this.done.Token;
+      try {
+        var enumerable = this.pendingFlushList.GetConsumingEnumerable(cancellationToken);
+        foreach ( var batch in enumerable ) {
+          FlushBatch(batch);
+        }
+      } catch ( OperationCanceledException ) {
+        // expected error
+        // need get any remaning entries
+        foreach ( var batch in this.pendingFlushList ) {
+          FlushBatch(batch);
+        }
       }
-      if ( this.eventHubClient != null && !this.eventHubClient.IsClosed ) {
-        await this.eventHubClient.CloseAsync();
+    }
+
+    private void FlushBatch(Batch<EventData> batch) {
+      var client = GetOrCreateClient();
+      if ( !batch.IsEmpty ) {
+        Exception error = null;
+        try {
+          client.SendBatch(batch.Drain());
+        } catch ( Exception ex ) {
+          error = ex;
+          this.eventHubClient.Abort();
+          this.eventHubClient = null;
+        }
+        if ( this.notifySink != null ) {
+          this.notifySink.OnSendComplete(batch, error);
+        }
       }
     }
 

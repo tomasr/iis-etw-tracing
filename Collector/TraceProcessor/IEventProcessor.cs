@@ -10,6 +10,7 @@ namespace Winterdom.Diagnostics.TraceProcessor {
   /// Processes a single event at a time
   /// </summary>
   public interface IEventProcessor : IDisposable {
+    void SetNotify(ISendNotify sink);
     Task<TraceEvent> Process(TraceEvent traceEvent);
     Task Flush();
   }

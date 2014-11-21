@@ -74,6 +74,7 @@
     <Compile Include="Impl\MultiBatchSender.cs" />
     <Compile Include="Impl\TraceSourceProcessor.cs" />
     <Compile Include="IPartitionKeyGenerator.cs" />
+    <Compile Include="ISendNotify.cs" />
     <Compile Include="ISettings.cs" />
     <Compile Include="ITraceSourceProcessor.cs" />
     <Compile Include="Impl\ComplexJsonConverter.cs" />
