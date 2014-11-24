@@ -21,7 +21,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     public MultiBatchSender(ISettings settings, IBatchSenderFactory factory) {
       this.senderFactory = factory;
       this.currentSender = 0;
-      this.senderCount = settings.GetInt32("ConcurrentSenders", 5);
+      this.senderCount = settings.GetInt32("EventHubSenderCount", Environment.ProcessorCount);
       this.availableSenders = new IBatchSender[senderCount];
 
       InitializeSenders();

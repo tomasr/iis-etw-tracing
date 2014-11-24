@@ -58,6 +58,12 @@ This collector will capture ETW events in near-real time and can push said event
    to Event Hub (should be less than 256KB by default)
 -->
 <add key="MaxBatchSizeKB" value="<event hub name>"/>
+<!--
+  Number of concurrent EventHub client instances to use
+  to send event batches. If not present, one sender
+  per CPU will be used.
+-->
+<add key="EventHubSenderCount" value="4"/>
 ```
 
 **Note:** This is just a sample, lacking most error handling and won't be able to handle a large number of events without some work. It is, however, useful for playing with Azure services :).
