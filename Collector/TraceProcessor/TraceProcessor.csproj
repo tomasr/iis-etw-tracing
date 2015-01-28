@@ -80,6 +80,7 @@
     <Compile Include="Impl\ComplexJsonConverter.cs" />
     <Compile Include="JsonFormatAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TraceParserExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\IISTraceEvent\IISTraceEvent.csproj">

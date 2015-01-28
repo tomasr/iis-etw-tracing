@@ -29,7 +29,7 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
 
     public void Start(IObservable<TraceEvent> eventStream) {
       if ( this.subscription != null ) {
-        throw new InvalidOperationException("Already started.");
+          this.subscription.Dispose();
       }
       this.subscription = eventStream.Subscribe(this);
     }

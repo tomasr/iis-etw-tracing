@@ -64,6 +64,12 @@ This collector will capture ETW events in near-real time and can push said event
   per CPU will be used.
 -->
 <add key="EventHubSenderCount" value="4"/>
+<!--
+  We buffer events to an ETL file before processing.
+  This value controls for how long the events
+  are buffered before processing the ETL file.
+-->
+<add key="BufferPeriod" value="00:02:00"/>
 ```
 
 **Note:** This is just a sample, lacking most error handling and won't be able to handle a large number of events without some work. It is, however, useful for playing with Azure services :).
