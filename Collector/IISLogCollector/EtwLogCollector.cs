@@ -6,19 +6,17 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Winterdom.Diagnostics.TraceProcessor;
-using Winterdom.Diagnostics.Tracing.IISTraceEvent;
 
-namespace IISLogCollector {
+namespace Winterdom.EtwCollector {
   [Export(typeof(ILogCollectorService))]
-  public class IISEtwLogCollector : ILogCollectorService, IDisposable {
-    public const String SessionName = "iis-etw-collector";
+  public class EtwLogCollector : ILogCollectorService, IDisposable {
+    public const String SessionName = "eh-etw-collector";
     private TraceEventSession bufferSession;
     private ETWTraceEventSource eventSource;
-    private TraceEventParser eventParser;
+    private IList<IEtwEventProvider> eventProviders;
     private IObservable<TraceEvent> observableStream;
     private ITraceSourceProcessor sourceProcessor;
     private String traceFolder;
@@ -27,8 +25,9 @@ namespace IISLogCollector {
     private TimeSpan bufferPeriod;
 
     [ImportingConstructor]
-    public IISEtwLogCollector(ITraceSourceProcessor processor, ISettings settings) {
+    public EtwLogCollector(ITraceSourceProcessor processor, ISettings settings, [ImportMany]IEnumerable<IEtwEventProvider> eventProviders) {
       this.sourceProcessor = processor;
+      this.eventProviders = eventProviders.ToList();
       this.traceFolder = Path.GetTempPath();
       this.bufferPeriod = settings.GetTimeSpan("BufferPeriod", TimeSpan.FromMinutes(5));
       this.shutdownEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
@@ -57,7 +56,7 @@ namespace IISLogCollector {
         this.bufferSession.Dispose();
         this.bufferSession = null;
       }
-      this.eventParser = null;
+      this.eventProviders = null;
     }
 
     private void CreateBufferSession() {
@@ -65,7 +64,9 @@ namespace IISLogCollector {
       this.bufferSession = new TraceEventSession(
         SessionName, this.currentFilename, TraceEventSessionOptions.Create
       );
-      this.bufferSession.EnableProvider(IISLogTraceEventParser.ProviderName);
+      foreach (var provider in eventProviders) {
+        provider.EnableProvider(this.bufferSession);
+      }
       Trace.WriteLine(String.Format("Starting buffering on: {0}", this.currentFilename));
     }
 
@@ -75,9 +76,11 @@ namespace IISLogCollector {
       this.eventSource = new ETWTraceEventSource(
         oldFile, TraceEventSourceType.FileOnly
       );
-      this.eventParser = new IISLogTraceEventParser(this.eventSource);
+      foreach (var provider in eventProviders) {
+        provider.RegisterParser(this.eventSource);
+      }
 
-      this.observableStream = this.eventParser.ObserveAll();
+      this.observableStream = this.eventSource.ObserveAll();
       this.sourceProcessor.Start(this.observableStream);
       new Task(Process).Start();
     }
@@ -108,9 +111,9 @@ namespace IISLogCollector {
       String oldFile = this.eventSource.LogFileName;
       this.ReleaseProcessingSession();
       File.Delete(oldFile);
-      
+
       // if we processed the file before the buffering
-      // period is done, it means we're processing events 
+      // period is done, it means we're processing events
       // faster than they are being collected
       // so wait for a while before switching the files again
       TimeSpan wait = this.bufferPeriod - timer.Elapsed;

@@ -4,12 +4,9 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Winterdom.Diagnostics.TraceProcessor;
-using Winterdom.Diagnostics.TraceProcessor.Impl;
 
-namespace IISLogCollector {
+namespace Winterdom.EtwCollector {
   // TODO: Should be a service!
   class Program {
     [Import]

@@ -1,7 +1,9 @@
+build/
 bin/
 obj/
 packages/
 TestResults/
+.vs/
 *.dll
 *.suo
 *.user
