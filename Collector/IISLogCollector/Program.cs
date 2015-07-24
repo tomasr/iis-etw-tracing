@@ -13,9 +13,9 @@ namespace Winterdom.EtwCollector {
     public ILogCollectorService CollectorService { get; set; }
 
     static void Main(string[] args) {
-      Type itsType = typeof(ITraceSourceProcessor);
       AggregateCatalog catalog = new AggregateCatalog();
-      catalog.Catalogs.Add(new AssemblyCatalog(itsType.Assembly));
+      String baseDir = AppDomain.CurrentDomain.BaseDirectory;
+      catalog.Catalogs.Add(new DirectoryCatalog(baseDir));
       catalog.Catalogs.Add(new AssemblyCatalog(typeof(Program).Assembly));
       CompositionContainer container = new FlatCompositionContainer(catalog);
 
