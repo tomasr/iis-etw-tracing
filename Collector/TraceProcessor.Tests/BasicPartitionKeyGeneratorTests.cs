@@ -14,14 +14,6 @@ namespace TraceProcessor.Tests {
   public class BasicPartitionKeyGeneratorTests : BaseEtwTraceTests {
 
     [TestMethod]
-    public void PartitionKeyIncludesTraceProvider() {
-      var traceEvent = LoadSampleTrace().First();
-      IPartitionKeyGenerator gen = new BasicPartitionKeyGenerator();
-      String key = gen.GetKey(traceEvent);
-      Assert.IsTrue(key.IndexOf(traceEvent.ProviderGuid.ToString()) >= 0);
-    }
-
-    [TestMethod]
     public void PartitionKeyIncludesMachineName() {
       var traceEvent = LoadSampleTrace().First();
       IPartitionKeyGenerator gen = new BasicPartitionKeyGenerator();
