@@ -41,6 +41,8 @@ namespace Winterdom.Diagnostics.TraceProcessor.Impl {
     public Task<TraceEvent> Process(TraceEvent traceEvent) {
       byte[] eventBody = EventToBytes(traceEvent);
 
+      System.IO.File.WriteAllBytes(String.Format(@"c:\temp\etw\{0}.json", Guid.NewGuid()), eventBody);
+
       EventData eventData = new EventData(eventBody);
       eventData.PartitionKey = keyGenerator.GetKey(traceEvent);
 

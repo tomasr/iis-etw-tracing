@@ -76,13 +76,19 @@ namespace Winterdom.EtwCollector {
       this.eventSource = new ETWTraceEventSource(
         oldFile, TraceEventSourceType.FileOnly
       );
-      foreach (var provider in eventProviders) {
+
+      var sortedProvs = eventProviders.OrderBy(x => x.IsKernelProvider ? 0 : 1);
+      foreach (var provider in sortedProvs) {
         provider.RegisterParser(this.eventSource);
       }
 
-      this.observableStream = this.eventSource.ObserveAll();
+      this.observableStream = JoinStreams(sortedProvs);
       this.sourceProcessor.Start(this.observableStream);
       new Task(Process).Start();
+    }
+
+    private IObservable<TraceEvent> JoinStreams(IEnumerable<IEtwEventProvider> providers) {
+      return System.Reactive.Linq.Observable.Merge(providers.Select(x => x.GetEventStream()));
     }
 
     private String SwitchBufferFiles() {
